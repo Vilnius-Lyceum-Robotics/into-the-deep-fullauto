@@ -81,7 +81,6 @@ public class MotionProfile {
                 this.jerkAcceleration = acceleration;
                 this.jerkDeceleration = deceleration;
                 break;
-
         }
     }
 

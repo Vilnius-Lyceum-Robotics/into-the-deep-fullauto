@@ -6,6 +6,8 @@
             <Servo name="angle" port="0" />
             <Servo name="twist" port="4" />
             <Servo name="claw" port="5" />
+            <ContinuousRotationServo name="leftHang" port="3" />
+            <ContinuousRotationServo name="rightHang" port="1" />
         </ServoHub>
         <LynxModule name="Control Hub" port="173">
             <goBILDA5202SeriesMotor name="MotorRightBack" port="0" />
@@ -19,6 +21,8 @@
             <RevSPARKMini name="MotorArm2" port="4" />
             <RevSPARKMini name="MotorArm3" port="5" />
             <RevTouchSensor name="SlideLimit" port="1" />
+            <AnalogInput name="leftAnalog" port="1" />
+            <AnalogInput name="rightAnalog" port="0" />
             <goBILDAPinpoint name="pinpoint" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>

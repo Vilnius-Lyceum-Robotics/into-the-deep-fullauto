@@ -43,7 +43,11 @@ import org.firstinspires.ftc.teamcode.subsystems.claw.ClawConfiguration;
 import org.firstinspires.ftc.teamcode.subsystems.claw.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.claw.commands.SetClawAngle;
 import org.firstinspires.ftc.teamcode.subsystems.claw.commands.SetClawTwist;
+import org.firstinspires.ftc.teamcode.subsystems.hang.HangConfiguration;
+import org.firstinspires.ftc.teamcode.subsystems.hang.HangSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.hang.commands.SecondStageHangCommand;
+import org.firstinspires.ftc.teamcode.subsystems.hang.commands.SetHangPosition;
+import org.firstinspires.ftc.teamcode.subsystems.hang.commands.ThirdStageHangCommand;
 import org.firstinspires.ftc.teamcode.subsystems.limelight.Limelight;
 import org.firstinspires.ftc.teamcode.subsystems.limelight.LimelightYoloReader;
 import org.firstinspires.ftc.teamcode.subsystems.wiper.Wiper;
@@ -76,7 +80,7 @@ public class VLRFullAuto extends VLRLinearOpMode {
         StrategyController strategyController = new StrategyController(gameStateController);
         LimelightYoloReader reader = new LimelightYoloReader();
 
-        VLRSubsystem.requireSubsystems(ArmSlideSubsystem.class, ArmRotatorSubsystem.class, ClawSubsystem.class, Chassis.class, Wiper.class);
+        VLRSubsystem.requireSubsystems(ArmSlideSubsystem.class, ArmRotatorSubsystem.class, ClawSubsystem.class, Chassis.class, Wiper.class, HangSubsystem.class);
         VLRSubsystem.initializeAll(hardwareMap);
 
         f = new Follower(hardwareMap);
@@ -172,7 +176,8 @@ public class VLRFullAuto extends VLRLinearOpMode {
                 }
             }
             if (gp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3) {
-                cs.schedule(new RetractArm());
+                //cs.schedule(new RetractArm());
+                cs.schedule(new ThirdStageHangCommand(()-> (gamepad1.left_bumper && gamepad1.right_bumper)));
             }
             VLRSubsystem.getInstance(Wiper.class).wipe(gp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
@@ -191,30 +196,30 @@ public class VLRFullAuto extends VLRLinearOpMode {
                 cs.schedule(new ResetRotatorMotor());
             }
 
-            if (gp.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
-                followerActive[0] = true;
-                f.holdPoint(new Pose(f.getPose().getX(), f.getPose().getY(), SUB_GRAB_POSE.getHeading()));
-                double headingError = Math.abs(f.getPose().getHeading() - SUB_GRAB_POSE.getHeading());
-                cs.schedule(
-                        new SequentialCommandGroup(
-                                new WaitCommand((long) (headingError * 30)),
-                                new SubmersibleGrab(f, alliance, reader, rc)
-                        ));
-            }
-            if (gp.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
-                followerActive[0] = true;
-                cs.schedule(
-                        new SequentialCommandGroup(
-                                new HighBasketScore(f, new InstantCommand() {
-                                    @Override
-                                    public void run() {
-                                        followerActive[0] = false;
-                                        rc.singleBlip();
-                                    }
-                                })
-                        )
-                );
-            }
+//            if (gp.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
+//                followerActive[0] = true;
+//                f.holdPoint(new Pose(f.getPose().getX(), f.getPose().getY(), SUB_GRAB_POSE.getHeading()));
+//                double headingError = Math.abs(f.getPose().getHeading() - SUB_GRAB_POSE.getHeading());
+//                cs.schedule(
+//                        new SequentialCommandGroup(
+//                                new WaitCommand((long) (headingError * 30)),
+//                                new SubmersibleGrab(f, alliance, reader, rc)
+//                        ));
+//            }
+//            if (gp.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
+//                followerActive[0] = true;
+//                cs.schedule(
+//                        new SequentialCommandGroup(
+//                                new HighBasketScore(f, new InstantCommand() {
+//                                    @Override
+//                                    public void run() {
+//                                        followerActive[0] = false;
+//                                        rc.singleBlip();
+//                                    }
+//                                })
+//                        )
+//                );
+//            }
             if (followerActive[0]) {
                 f.update();
             } else {

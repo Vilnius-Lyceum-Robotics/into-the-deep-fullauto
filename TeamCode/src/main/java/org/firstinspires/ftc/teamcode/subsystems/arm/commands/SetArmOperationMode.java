@@ -12,7 +12,6 @@ public class SetArmOperationMode extends SequentialCommandGroup {
     public SetArmOperationMode(ArmSlideConfiguration.OperationMode operationMode){
         addCommands(
                 new InstantCommand(()-> VLRSubsystem.getSlides().setOperationMode(operationMode)),
-                new WaitCommand(5),
 
                 new CustomConditionalCommand(
                         new SequentialCommandGroup(
@@ -26,8 +25,8 @@ public class SetArmOperationMode extends SequentialCommandGroup {
                         new SequentialCommandGroup(
                                 new InstantCommand(()-> VLRSubsystem.getRotator().setHangCoefficients()),
                                 new InstantCommand(()-> VLRSubsystem.getSlides().setHangCoefficientsFast())
-                ),
-                ()-> operationMode == ArmSlideConfiguration.OperationMode.HANG_FAST
+                        ),
+                        ()-> operationMode == ArmSlideConfiguration.OperationMode.HANG_FAST
         )
 
         );

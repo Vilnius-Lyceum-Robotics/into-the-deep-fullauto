@@ -6,7 +6,6 @@ import static org.firstinspires.ftc.teamcode.subsystems.arm.slide.ArmSlideConfig
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -241,7 +240,9 @@ public class ArmSlideSubsystem extends VLRSubsystem<ArmSlideSubsystem> {
                     }
 
                 } else setMotorPower(power);
-            } else setMotorPower(power);
+            } else{
+                setMotorPower(power);
+            }
         }
     }
 }

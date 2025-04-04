@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems.hang;
 
-import com.ThermalEquilibrium.homeostasis.Filters.FilterAlgorithms.LowPassFilter;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.helpers.subsystems.VLRSubsystem;
@@ -17,10 +15,9 @@ public class HangSubsystem extends VLRSubsystem<HangSubsystem> implements HangCo
     private CRServo left, right;
     private AnalogInput analogLeft, analogRight;
 
-    private LowPassFilter leftFilter = new LowPassFilter(0.93);
-    private LowPassFilter rightFilter = new LowPassFilter(0.93);
-
-    public static double p = 0.01;
+    public static double p = 0.005;
+    private double powerOverride = 0;
+    private boolean overridePower = true;
 
 
     @Override
@@ -28,16 +25,32 @@ public class HangSubsystem extends VLRSubsystem<HangSubsystem> implements HangCo
         left = hardwareMap.get(CRServo.class, LEFT_AXON);
         right = hardwareMap.get(CRServo.class, RIGHT_AXON);
 
-        left.setDirection(DcMotorSimple.Direction.FORWARD);
-        right.setDirection(DcMotorSimple.Direction. REVERSE);
+        left.setDirection(DcMotorSimple.Direction.REVERSE);
+        right.setDirection(DcMotorSimple.Direction.REVERSE);
 
         analogLeft = hardwareMap.get(AnalogInput.class, LEFT_ANALOG);
         analogRight = hardwareMap.get(AnalogInput.class, RIGHT_ANALOG);
+
+        setPower(0);
     }
 
 
     @Override
     public void periodic(){
+        double powerLeft = p * (getAngle(analogLeft.getVoltage()) - leftAnalogThreshold - 20);
+        double powerRight = p * (rightAnalogThreshold - 20 - getAngle(analogRight.getVoltage()));
+
+        if (overridePower) {
+            left.setPower(powerOverride);
+            right.setPower(powerOverride);
+        }
+        else {
+            left.setPower(powerLeft);
+            right.setPower(powerRight);
+        }
+
+
+
         Telemetry telemetry = FtcDashboard.getInstance().getTelemetry();
 
         telemetry.addData("HANG_LEFT_ANALOG_ANGLE: ", getAngle(analogLeft.getVoltage()));
@@ -47,30 +60,26 @@ public class HangSubsystem extends VLRSubsystem<HangSubsystem> implements HangCo
 
 
     public void setPower(double power){
-        left.setPower(power);
-        right.setPower(power);
+        overridePower = true;
+        powerOverride = power;
     }
 
 
-    public void setTargetAngle(double angleLeft, double angleRight){
-        double powerLeft = p * (angleLeft - getAngle(analogLeft.getVoltage()));
-        double powerRight = p * (angleRight - getAngle(analogRight.getVoltage()));
-
-        left.setPower(powerLeft);
-        right.setPower(powerRight);
+    public void setTargetAngleUP(){
+        overridePower = false;
     }
 
 
-    public double getAngle(double voltage){
-        return voltage / 3.3 * 360;
-    }
-    public double getLeftAngle(){return getAngle(analogLeft.getVoltage());}
+    public double getAngle(double voltage){ return voltage / 3.3 * 360;}
+
+    public double getLeftAngle(){ return getAngle(analogLeft.getVoltage());}
+    public double getRightAngle(){ return getAngle(analogRight.getVoltage());}
 
 
     public boolean analogFeedbackThresholdReached(){
         return (
-                getAngle(analogLeft.getVoltage()) > leftAnalogThreshold &&
-                getAngle(analogRight.getVoltage()) < rightAnalogThreshold
+                getAngle(analogLeft.getVoltage()) < leftAnalogThreshold &&
+                getAngle(analogRight.getVoltage()) > rightAnalogThreshold
         );
     }
 }

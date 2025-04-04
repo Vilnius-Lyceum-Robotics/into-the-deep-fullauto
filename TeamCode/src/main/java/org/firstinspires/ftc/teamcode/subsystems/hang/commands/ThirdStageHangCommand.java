@@ -33,27 +33,26 @@ public class ThirdStageHangCommand extends SequentialCommandGroup {
                 ),
                 new SetClawAngle(ClawConfiguration.VerticalRotation.UP),
 
-
+                new InstantCommand(()-> VLRSubsystem.getHang().setTargetAngleUP()),
                 new SetRotatorAngle(102.5),
-                new WaitUntilCommand(()-> VLRSubsystem.getRotator().getAngleDegrees() >= 60),
+                new WaitUntilCommand(()-> VLRSubsystem.getRotator().getAngleDegrees() >= 80),
                 new SetSlideExtension(0.314),
                 new WaitUntilCommand(()-> (VLRSubsystem.getRotator().reachedTargetPosition() && VLRSubsystem.getSlides().reachedTargetPosition())).withTimeout(2000),
-
-                //LEDS:
-                //new SetColour(NeoPixelConfiguration.Colour.RED),
-                //new SetEffect(NeoPixelConfiguration.Effect.SOLID_COLOR),
-
+                new WaitCommand(500),
 
                 new WaitUntilCommand(gamepadCondition),
                 new SetArmOperationMode(ArmSlideConfiguration.OperationMode.HANG_SLOW),
 
-                new SequentialCommandGroup(
-                    new SetSlideExtension(0.2),  //208
-                    new WaitCommand(200),
-                    new SetHangPosition(HangConfiguration.TargetPosition.UP),
-                    new SetRotatorAngle(85),
-                    new WaitCommand(10000000)
-                ).interruptOn(interruptCondition),
+                new SetSlideExtension(0.15),
+                new WaitCommand(100),
+                new SetRotatorAngle(85),
+                new WaitCommand(300),
+                new InstantCommand(()-> VLRSubsystem.getHang().setPower(0.2)),
+                new WaitUntilCommand(()->VLRSubsystem.getHang().analogFeedbackThresholdReached()),
+                new SetSlideExtension(0.3),
+                new InstantCommand(()-> VLRSubsystem.getHang().setPower(0)),
+
+                new WaitCommand(10000000),
 
 
                 new SetArmOperationMode(ArmSlideConfiguration.OperationMode.NORMAL),

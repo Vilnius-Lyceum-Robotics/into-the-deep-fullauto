@@ -28,10 +28,10 @@ public class SetHangPosition extends CommandBase {
 
         switch (targetPosition){
             case DOWN:
-                hang.setPower(-0.12);
+                hang.setPower(-0.4);
                 break;
             case UP:
-                hang.setPower(0.45);
+                hang.setPower(0.75);
                 break;
         }
     }
@@ -49,7 +49,7 @@ public class SetHangPosition extends CommandBase {
     public void end(boolean interrupted){
             switch (targetPosition) {
                 case UP:
-                    hang.setPower(0.5);
+                    hang.setPower(0);
                     break;
                 case DOWN:
                     hang.setPower(0);
@@ -60,6 +60,6 @@ public class SetHangPosition extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return timer.seconds() > 0.9;
+        return timer.seconds() > 0.4;
     }
 }
