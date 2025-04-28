@@ -14,7 +14,7 @@
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
-apply plugin: 'org.team11260.fast-load-plugin'
+apply plugin: 'dev.frozenmilk.sinister.sloth.load'
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
@@ -28,13 +28,12 @@ buildscript {
     repositories {
         mavenCentral()
         maven {
-            url = 'https://www.matthewo.tech/maven/'
+            url "https://repo.dairy.foundation/releases"
         }
     }
 
     dependencies {
-        classpath 'org.team11260:fast-load-plugin:0.1.2'
-
+        classpath "dev.frozenmilk:Load:0.2.1"
     }
 }
 
@@ -42,18 +41,37 @@ repositories {
     maven {
         url = 'https://www.matthewo.tech/maven/'
     }
+    maven {
+        url = "https://repo.dairy.foundation/releases"
+    }
+    maven {
+        url = "https://repo.dairy.foundation/snapshots"
+    }
 }
 
 dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
-
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.21'
-
-    implementation 'org.team11260:fast-load:0.1.2'
-
     implementation "org.tensorflow:tensorflow-lite:2.2.0"
     implementation "org.tensorflow:tensorflow-lite-support:0.4.0"
     implementation "org.apache.commons:commons-lang3:3.17.0"
+
+    implementation("dev.frozenmilk.sinister:Sloth:0.2.1")
+    implementation("dev.frozenmilk.dairy:Core:2.2.1")
+    //implementation 'org.team11260:fast-load:0.1.2'
+    implementation 'com.acmerobotics.slothboard:dashboard:0.2.1+0.4.16'
+}
+
+
+// Add this to fix dashboard conflicts:
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'com.acmerobotics.dashboard') {
+                details.useTarget 'com.acmerobotics.slothboard:dashboard:0.2.1+0.4.16'
+            }
+        }
+    }
 }

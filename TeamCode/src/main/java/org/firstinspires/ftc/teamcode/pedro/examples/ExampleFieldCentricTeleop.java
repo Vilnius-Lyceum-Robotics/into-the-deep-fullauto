@@ -1,22 +1,21 @@
-package pedroPathing.tuners.examples;
-
+package org.firstinspires.ftc.teamcode.pedro.examples;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import pedroPathing.tuners.constants.FConstants;
-import pedroPathing.tuners.constants.LConstants;
+import org.firstinspires.ftc.teamcode.pedro.constants.FConstants;
+import org.firstinspires.ftc.teamcode.pedro.constants.LConstants;
 
 /**
- * This is an example teleop that showcases movement and robot-centric driving.
+ * This is an example teleop that showcases movement and field-centric driving.
  *
  * @author Baron Henderson - 20077 The Indubitables
  * @version 2.0, 12/30/2024
  */
 
-@TeleOp(name = "Example Robot-Centric Teleop", group = "Examples")
-public class ExampleRobotCentricTeleop extends OpMode {
+@TeleOp(name = "Example Field-Centric Teleop", group = "Examples")
+public class ExampleFieldCentricTeleop extends OpMode {
     private Follower follower;
     private final Pose startPose = new Pose(0,0,0);
 
@@ -46,10 +45,10 @@ public class ExampleRobotCentricTeleop extends OpMode {
         - Forward/Backward Movement: -gamepad1.left_stick_y
         - Left/Right Movement: -gamepad1.left_stick_x
         - Turn Left/Right Movement: -gamepad1.right_stick_x
-        - Robot-Centric Mode: true
+        - Robot-Centric Mode: false
         */
 
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         follower.update();
 
         /* Telemetry Outputs of our Follower */

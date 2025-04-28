@@ -1,4 +1,4 @@
-package pedroPathing.tuners.constants;
+package org.firstinspires.ftc.teamcode.pedro.constants;
 
 import com.pedropathing.localization.*;
 import com.pedropathing.localization.constants.*;

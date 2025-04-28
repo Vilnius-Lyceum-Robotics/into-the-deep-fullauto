@@ -1,4 +1,4 @@
-package pedroPathing.tuners.tuners_tests.localization;
+package org.firstinspires.ftc.teamcode.pedro.tuners_tests.localization;
 
 import static com.pedropathing.follower.FollowerConstants.*;
 import static org.firstinspires.ftc.teamcode.auto.sample.Points_sample.START_POSE;
@@ -13,8 +13,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import pedroPathing.tuners.constants.FConstants;
-import pedroPathing.tuners.constants.LConstants;
+import org.firstinspires.ftc.teamcode.pedro.constants.FConstants;
+import org.firstinspires.ftc.teamcode.pedro.constants.LConstants;
 
 import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.util.DashboardPoseTracker;

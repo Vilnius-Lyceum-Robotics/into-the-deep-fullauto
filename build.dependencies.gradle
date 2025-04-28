@@ -6,6 +6,7 @@ repositories {
     maven { url = 'https://maven.pedropathing.com/' }
     maven { url = 'https://jitpack.io' }
     maven { url 'https://jitpack.io' }
+    maven { url = 'https://repo.dairy.foundation/releases' }
 }
 
 dependencies {
@@ -18,14 +19,30 @@ dependencies {
     implementation 'org.firstinspires.ftc:FtcCommon:10.2.0'
     implementation 'org.firstinspires.ftc:Vision:10.2.0'
     implementation 'androidx.appcompat:appcompat:1.2.0' // keep at 1.2.0, else it breaks
-    implementation 'com.pedropathing:pedro:1.0.9'
+
     implementation 'com.pedropathing:ftclib:1.0.7'
-    implementation 'com.acmerobotics.dashboard:dashboard:0.4.16'
     implementation 'org.ftclib.ftclib:core:2.1.1'
     implementation 'com.github.Eeshwar-Krishnan:PhotonFTC:v3.0.1-ALPHA'
     implementation 'com.roboctopi:Cuttlefish:1.0.0'
     implementation 'com.roboctopi:CuttlefishFTCBridge:1.0.0'
     implementation 'com.github.Thermal-Equilibrium:homeostasis-FTC:1.0.8'
 
+    implementation 'com.acmerobotics.slothboard:dashboard:0.2.1+0.4.16'
+
+    implementation("com.pedropathing:pedro:1.0.9") {
+        exclude group: "com.acmerobotics.dashboard"
+    }
+}
+
+
+// Add this to fix dashboard conflicts:
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'com.acmerobotics.dashboard') {
+                details.useTarget 'com.acmerobotics.slothboard:dashboard:0.2.1+0.4.16'
+            }
+        }
+    }
 }
 

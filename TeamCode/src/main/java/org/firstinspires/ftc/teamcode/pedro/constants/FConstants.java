@@ -1,4 +1,4 @@
-package pedroPathing.tuners.constants;
+package org.firstinspires.ftc.teamcode.pedro.constants;
 
 import static org.firstinspires.ftc.teamcode.subsystems.chassis.ChassisConfiguration.MOTOR_LEFT_BACK;
 import static org.firstinspires.ftc.teamcode.subsystems.chassis.ChassisConfiguration.MOTOR_LEFT_FRONT;
