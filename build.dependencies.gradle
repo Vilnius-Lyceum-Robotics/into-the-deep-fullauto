@@ -25,9 +25,8 @@ dependencies {
     implementation 'com.github.Eeshwar-Krishnan:PhotonFTC:v3.0.1-ALPHA'
     implementation 'com.roboctopi:Cuttlefish:1.0.0'
     implementation 'com.roboctopi:CuttlefishFTCBridge:1.0.0'
-    implementation 'com.github.Thermal-Equilibrium:homeostasis-FTC:1.0.8'
+    //implementation 'com.github.Thermal-Equilibrium:homeostasis-FTC:1.0.8'
 
-    implementation 'com.acmerobotics.slothboard:dashboard:0.2.1+0.4.16'
 
     implementation("com.pedropathing:pedro:1.0.9") {
         exclude group: "com.acmerobotics.dashboard"

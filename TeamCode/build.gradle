@@ -12,18 +12,6 @@
 // Custom definitions may go here
 
 // Include common definitions from above.
-apply from: '../build.common.gradle'
-apply from: '../build.dependencies.gradle'
-apply plugin: 'dev.frozenmilk.sinister.sloth.load'
-
-android {
-    namespace = 'org.firstinspires.ftc.teamcode'
-
-    packagingOptions {
-        jniLibs.useLegacyPackaging true
-    }
-}
-
 buildscript {
     repositories {
         mavenCentral()
@@ -37,9 +25,22 @@ buildscript {
     }
 }
 
+
+apply from: '../build.common.gradle'
+apply from: '../build.dependencies.gradle'
+apply plugin: 'dev.frozenmilk.sinister.sloth.load'
+
+android {
+    namespace = 'org.firstinspires.ftc.teamcode'
+
+    packagingOptions {
+        jniLibs.useLegacyPackaging true
+    }
+}
+
 repositories {
     maven {
-        url = 'https://www.matthewo.tech/maven/'
+        url = 'https://maven.brott.dev/'
     }
     maven {
         url = "https://repo.dairy.foundation/releases"
@@ -48,6 +49,7 @@ repositories {
         url = "https://repo.dairy.foundation/snapshots"
     }
 }
+
 
 dependencies {
     implementation project(':FtcRobotController')
@@ -58,20 +60,6 @@ dependencies {
     implementation "org.tensorflow:tensorflow-lite-support:0.4.0"
     implementation "org.apache.commons:commons-lang3:3.17.0"
 
-    implementation("dev.frozenmilk.sinister:Sloth:0.2.1")
     implementation("dev.frozenmilk.dairy:Core:2.2.1")
-    //implementation 'org.team11260:fast-load:0.1.2'
     implementation 'com.acmerobotics.slothboard:dashboard:0.2.1+0.4.16'
-}
-
-
-// Add this to fix dashboard conflicts:
-configurations.all {
-    resolutionStrategy {
-        eachDependency { DependencyResolveDetails details ->
-            if (details.requested.group == 'com.acmerobotics.dashboard') {
-                details.useTarget 'com.acmerobotics.slothboard:dashboard:0.2.1+0.4.16'
-            }
-        }
-    }
 }
