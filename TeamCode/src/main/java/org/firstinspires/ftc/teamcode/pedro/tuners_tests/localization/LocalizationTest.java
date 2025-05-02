@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedro.tuners_tests.localization;
 
 import static com.pedropathing.follower.FollowerConstants.*;
-import static org.firstinspires.ftc.teamcode.auto.sample.Points_sample.START_POSE;
+import static org.firstinspires.ftc.teamcode.auto.sample.PointsSample.START_POSE;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;

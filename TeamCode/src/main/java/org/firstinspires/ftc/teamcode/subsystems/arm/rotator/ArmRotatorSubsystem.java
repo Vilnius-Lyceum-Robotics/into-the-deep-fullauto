@@ -44,6 +44,9 @@ public class ArmRotatorSubsystem {
     private OPERATION_MODE operationMode = OPERATION_MODE.NORMAL;
     private OPERATION_MODE prevOperationMode = OPERATION_MODE.NORMAL;
 
+    private boolean powerOverride_state = false;
+    private double powerOverride_value = 0;
+
 
     public ArmRotatorSubsystem (HardwareMap hardwareMap) {
         ArmState.resetAll();
@@ -153,6 +156,16 @@ public class ArmRotatorSubsystem {
         encoderOffset = thoughBoreEncoder.getCurrentPosition();
     }
 
+    public void enablePowerOverride(double power){
+        powerOverride_state = true;
+        powerOverride_value = power;
+    }
+
+    public void disablePowerOverride(){
+        powerOverride_value = 0;
+        powerOverride_state = false;
+    }
+
 
     public void periodic(double slideExtension, OPERATION_MODE operationMode) {
         encoderPosition = (thoughBoreEncoder.getCurrentPosition() - encoderOffset);
@@ -162,6 +175,11 @@ public class ArmRotatorSubsystem {
         if (DEBUG_MODE){
             setDefaultCoefficients();
             holdPointPID.setPID(FEEDBACK_PROPORTIONAL_GAIN_HOLD_POINT, FEEDBACK_INTEGRAL_GAIN_HOLD_POINT, FEEDBACK_DERIVATIVE_GAIN_HOLD_POINT);
+        }
+
+        if (powerOverride_state){
+            motor.setPower(powerOverride_value);
+            return;
         }
 
         double feedForward = mapToRange(slideExtension, 0, 1, FEEDFORWARD_GAIN, EXTENDED_FEEDFORWARD_GAIN);
@@ -194,8 +212,8 @@ public class ArmRotatorSubsystem {
         }
         else {
             encoderReset = false;
-            if (motionProfile.getTargetPosition() == 0 && currentAngle > 3 && currentAngle < 10){
-                power = -0.07;
+            if (motionProfile.getTargetPosition() == 0 && currentAngle <= 10){
+                power = -0.08;
             }
         }
 

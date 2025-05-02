@@ -106,13 +106,6 @@ public class DriverControls {
                 rightStickHandler.accept(gamepad.getRightY(), gamepad.getRightX());
         }
 
-        if (vibration != null && vibration.get()) {
-            gamepad.gamepad.rumble(0.5, 0.5, Gamepad.RUMBLE_DURATION_CONTINUOUS);
-        } else {
-            gamepad.gamepad.rumble(0, 0, 0);
-        }
-
-
         for (ControlDefinition control : controls) {
             control.run(gamepad);
         }

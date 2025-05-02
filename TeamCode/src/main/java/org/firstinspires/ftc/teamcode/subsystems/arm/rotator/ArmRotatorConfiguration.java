@@ -24,14 +24,14 @@ public class ArmRotatorConfiguration {
     //VERY SLOW, LOGIC TUNING CONSTANTS
     public static double ACCELERATION_JERK = 36000;
     public static double DECELERATION_JERK = 28000;
-    public static double MAX_VELOCITY = 880;
+    public static double MAX_VELOCITY = 900;
 
-    public static double FEEDBACK_PROPORTIONAL_GAIN = 0.048;
-    public static double FEEDBACK_INTEGRAL_GAIN = 0.0001;
-    public static double FEEDBACK_DERIVATIVE_GAIN = 0.00028;
+    public static double FEEDBACK_PROPORTIONAL_GAIN = 0.031;
+    public static double FEEDBACK_INTEGRAL_GAIN = 0.00001;
+    public static double FEEDBACK_DERIVATIVE_GAIN = 0.00048;
     public static double VELOCITY_GAIN = 0.0021;
-    public static double ACCELERATION_GAIN = 0.00013;
-    public static double FEEDFORWARD_GAIN = 0.02;
+    public static double ACCELERATION_GAIN = 0.00018;
+    public static double FEEDFORWARD_GAIN = 0.08;
 
     public static double EXTENDED_ACCELERATION_JERK = 9000;
     public static double EXTENDED_DECELERATION_JERK = 3000;

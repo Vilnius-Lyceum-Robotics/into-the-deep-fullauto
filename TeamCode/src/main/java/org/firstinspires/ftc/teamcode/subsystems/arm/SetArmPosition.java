@@ -139,41 +139,37 @@ public class SetArmPosition extends SequentialCommandGroup{
     }
 
     public Command extension(double extension){
-        return new ScheduleRuntimeCommand(
-                ()-> new SequentialCommandGroup(
-                        new CustomConditionalCommand(
-                                new LogCommand("SET ARM POSITION.EXTENSION", Level.SEVERE, "SLIDES ALREADY MOVING, WAITING PREVIOUS COMMAND TO FINISH"),
-                                ()-> (arm.areSlidesMoving() && arm.getTargetExtension() != extension)
-                        ),
-                        new SetArmPosition().extensionAndAngleDegrees(extension, arm.getTargetAngleDegrees())
-                )
+        return new SequentialCommandGroup(
+                new CustomConditionalCommand(
+                        new LogCommand("SET ARM POSITION.EXTENSION", Level.SEVERE, "SLIDES ALREADY MOVING"),
+                        ()-> (arm.areSlidesMoving() && arm.getTargetExtension() != extension)
+                ),
+
+                new ScheduleRuntimeCommand(()-> new SetArmPosition().extensionAndAngleDegrees(extension, arm.getTargetAngleDegrees()))
 
         );
     }
 
     public Command extensionRelative(double delta){
-        return new ScheduleRuntimeCommand(
-                ()-> new SequentialCommandGroup(
-                        new CustomConditionalCommand(
-                                new LogCommand("SET ARM POSITION.EXTENSION", Level.SEVERE, "SLIDES ALREADY MOVING, WAITING PREVIOUS COMMAND TO FINISH"),
-                                ()-> (arm.areSlidesMoving() && arm.getTargetExtension() != arm.getTargetExtension() + delta)
-                        ),
-                        new SetArmPosition().extensionAndAngleDegrees(arm.getTargetExtension() + delta, arm.getTargetAngleDegrees())
-                )
+        return new SequentialCommandGroup(
+                new CustomConditionalCommand(
+                        new LogCommand("SET ARM POSITION.EXTENSION", Level.SEVERE, "SLIDES ALREADY MOVING, WAITING PREVIOUS COMMAND TO FINISH"),
+                        ()-> (arm.areSlidesMoving() && arm.getTargetExtension() != arm.getTargetExtension() + delta)
+                ),
+
+                new ScheduleRuntimeCommand(()-> new SetArmPosition().extensionAndAngleDegrees(arm.getTargetExtension() + delta, arm.getTargetAngleDegrees()))
         );
     }
 
 
     public Command angleDegrees(double angleDegrees){
-        return new ScheduleRuntimeCommand(
-                ()-> new SequentialCommandGroup(
-                    new CustomConditionalCommand(
-                            new LogCommand("SET ARM POSITION.ANGLE_DEGREES", Level.SEVERE, "ROTATOR ALREADY MOVING, WAITING PREVIOUS COMMAND TO FINISH"),
-                            ()-> (arm.isRotatorMoving() && arm.getTargetAngleDegrees() != angleDegrees)
-                    ),
-                    new SetArmPosition().extensionAndAngleDegrees(arm.getTargetExtension(), angleDegrees)
-                )
+        return new SequentialCommandGroup(
+                new CustomConditionalCommand(
+                        new LogCommand("SET ARM POSITION.ANGLE_DEGREES", Level.SEVERE, "ROTATOR ALREADY MOVING, WAITING PREVIOUS COMMAND TO FINISH"),
+                        ()-> (arm.isRotatorMoving() && arm.getTargetAngleDegrees() != angleDegrees)
+                ),
 
+                new ScheduleRuntimeCommand(()-> new SetArmPosition().extensionAndAngleDegrees(arm.getTargetExtension(), angleDegrees))
         );
     }
 
@@ -212,7 +208,7 @@ public class SetArmPosition extends SequentialCommandGroup{
         return new SequentialCommandGroup(
                 new CustomConditionalCommand(
                         retract(),
-                        ()-> !ArmState.isCurrentState(ArmState.State.IN_ROBOT)
+                        ()-> !ArmState.isCurrentState(ArmState.State.IN_ROBOT, ArmState.State.SAMPLE_SCORE)
                 ),
 
                 new CustomConditionalCommand(
@@ -220,16 +216,60 @@ public class SetArmPosition extends SequentialCommandGroup{
                                 new LogCommand("INTAKE SAMPLE COMMAND", "INTAKING SAMPLE FROM IN ROBOT STATE"),
 
                                 new SetClawAngle(ClawConfiguration.VerticalRotation.UP),
+                                new SetClawTwist(twist),
                                 new SetClawState(ClawConfiguration.GripperState.OPEN),
-                                new SetArmPosition().extension(extension).alongWith(
+                                new SetArmPosition().extensionAndAngleDegrees(extension, 2).alongWith(
                                         new SequentialCommandGroup(
-                                                new WaitUntilCommand(()-> arm.currentExtension() > clamp(extension - 0.1, 0.15 ,1)),
-                                                new SetClawAngle(angle),
-                                                new SetClawTwist(twist)
+                                                new WaitUntilCommand(()-> arm.currentExtension() > clamp(extension - 0.25, 0.08 ,1)),
+                                                new SetClawAngle(angle)
+                                        )
+                                ),
+                                new SetArmPosition().angleDegrees(0),
+                                new WaitCommand(100)
+                        ),
+                        ()-> ArmState.isCurrentState(ArmState.State.IN_ROBOT)
+                ),
+
+
+                new CustomConditionalCommand(
+                        new SequentialCommandGroup(
+                                new LogCommand("INTAKE SAMPLE COMMAND", "INTAKING SAMPLE FROM IN SAMPLE SCORE STATE"),
+
+                                new SetClawState(ClawConfiguration.GripperState.OPEN),
+                                new WaitCommand(70),
+                                new SetClawAngle(ClawConfiguration.VerticalRotation.DOWN),
+                                new WaitCommand(100),
+
+                                new ParallelCommandGroup(
+                                        new SetArmPosition().extensionAndAngleDegrees(0, 52, MainArmConfiguration.GAME_PIECE_TYPE.SAMPLE),
+                                        new WaitCommand(350).andThen(new SetClawAngle(ClawConfiguration.VerticalRotation.UP))
+                                ),
+
+                                new WaitUntilCommand(()-> arm.currentExtension() < 0.1),
+                                new SetClawAngle(ClawConfiguration.VerticalRotation.UP),
+                                new ParallelCommandGroup(
+                                        new SetArmPosition().angleDegrees(2).andThen(new SetClawTwist(twist)),
+                                        new SetClawAngle(ClawConfiguration.VerticalRotation.UP),
+
+                                        new SequentialCommandGroup(
+                                                new WaitUntilCommand(()-> arm.currentAngleDegrees() < 40),
+                                                new SetClawAngle(ClawConfiguration.VerticalRotation.UP),
+
+                                                new ParallelCommandGroup(
+                                                        new SetArmPosition().extension(extension),
+                                                        new SequentialCommandGroup(
+                                                                new SetClawAngle(ClawConfiguration.VerticalRotation.UP),
+                                                                new WaitUntilCommand(()-> arm.currentExtension() > clamp(extension - 0.25, 0.08 ,1)),
+                                                                new SetClawAngle(angle),
+                                                                new WaitCommand(200),
+                                                                new SetArmPosition().angleDegrees(0),
+                                                                new WaitCommand(50)
+                                                        )
+                                                )
                                         )
                                 )
                         ),
-                        ()-> ArmState.isCurrentState(ArmState.State.IN_ROBOT)
+                        ()-> ArmState.isCurrentState(ArmState.State.SAMPLE_SCORE)
                 )
         );
     }
@@ -281,17 +321,17 @@ public class SetArmPosition extends SequentialCommandGroup{
                         new SequentialCommandGroup(
                                 new LogCommand("RETRACT ARM", Level.SEVERE, "RETRACTING ARM FROM SAMPLE SCORE STATE"),
                                 new SetClawState(ClawConfiguration.GripperState.OPEN),
-                                new WaitCommand(100),
+                                new WaitCommand(70),
                                 new SetClawAngle(ClawConfiguration.VerticalRotation.DOWN),
-                                new WaitCommand(50),
+                                new WaitCommand(60),
 
                                 new ParallelCommandGroup(
-                                        new SetArmPosition().angleDegrees(55),
-                                        new WaitCommand(100).andThen(new SetArmPosition().extension(0)),
-                                        new WaitCommand(250).andThen(new SetClawState(ClawConfiguration.GripperState.CLOSED), new SetClawAngle(ClawConfiguration.VerticalRotation.UP))
+                                        new SetArmPosition().extensionAndAngleDegrees(0, 52, MainArmConfiguration.GAME_PIECE_TYPE.SAMPLE),
+                                        new WaitCommand(250).andThen(new SetClawAngle(ClawConfiguration.VerticalRotation.UP))
                                 ),
 
-                                new WaitUntilCommand(()-> arm.currentExtension() < 0.06),
+                                new WaitUntilCommand(()-> arm.currentExtension() < 0.2),
+                                new WaitUntilCommand(()-> arm.currentExtension() < 0.08).withTimeout(1000),
                                 new SetArmPosition().angleDegrees(0),
                                 setArmState(ArmState.State.IN_ROBOT)
                         ),
@@ -331,11 +371,6 @@ public class SetArmPosition extends SequentialCommandGroup{
                         new SequentialCommandGroup(
                                 new LogCommand("RETRACT ARM", Level.SEVERE, "RETRACTING ARM FROM SPECIMEN OR SAMPLE INTAKE STATE"),
 
-//                                new CustomConditionalCommand(
-//                                        new SetArmPosition().extensionRelative(0.075),
-//                                        ()-> ArmState.isCurrentState(ArmState.State.SPECIMEN_INTAKE)
-//                                ),
-
                                 new SetClawState(ClawConfiguration.GripperState.CLOSED),
                                 new WaitCommand(170),
                                 new SetClawAngle(ClawConfiguration.VerticalRotation.UP),
@@ -364,9 +399,9 @@ public class SetArmPosition extends SequentialCommandGroup{
                                 new ParallelCommandGroup(
                                         new WaitCommand(300).andThen(new SetClawAngle(ClawConfiguration.VerticalRotation.DOWN)),
                                         new SetArmPosition().angleDegrees(101),
-                                        new WaitUntilCommand(()-> arm.currentAngleDegrees() > 62).andThen(new SetArmPosition().extension(sampleScoreHeight.extension)),
+                                        new WaitUntilCommand(()-> arm.currentAngleDegrees() > 17).andThen(new SetArmPosition().extension(sampleScoreHeight.extension)),
                                         new SequentialCommandGroup(
-                                                new WaitUntilCommand(()-> arm.currentExtension() > sampleScoreHeight.extension - 0.2),
+                                                new WaitUntilCommand(()-> arm.currentExtension() > sampleScoreHeight.extension - 0.27),
                                                 new SetClawAngle(ClawConfiguration.VerticalRotation.DEPOSIT)
                                         )
                                 ),

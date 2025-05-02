@@ -9,7 +9,9 @@ import com.pedropathing.localization.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.auto.specimen.AutonomousPeriodActionSpecimen;
+import org.firstinspires.ftc.teamcode.helpers.enums.Alliance;
 import org.firstinspires.ftc.teamcode.helpers.opmode.VLRAutoTestOpMode;
+import org.firstinspires.ftc.teamcode.subsystems.limelight.LimelightYoloReader;
 
 
 @TeleOp(name = "VLR_SpecimenAuto", group = "!TELEOP")
@@ -19,7 +21,7 @@ public class VLRSpecimenAuto extends VLRAutoTestOpMode {
     public Pose StartPose() {return START_POSE;}
 
     @Override
-    public Command autoCommand(Follower f){
-        return new AutonomousPeriodActionSpecimen(f);
+    public Command autoCommand(Follower f, LimelightYoloReader reader){
+        return new AutonomousPeriodActionSpecimen(f, Alliance.BLUE, reader);
     }
 }

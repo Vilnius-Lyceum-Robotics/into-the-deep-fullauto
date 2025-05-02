@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.helpers.utils.opmodes;
 
-import static org.firstinspires.ftc.teamcode.auto.sample.Points_sample.SUB_GRAB;
+import static org.firstinspires.ftc.teamcode.auto.sample.PointsSample.SUB_GRAB;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandScheduler;
@@ -17,9 +17,7 @@ import org.firstinspires.ftc.teamcode.pedro.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedro.constants.LConstants;
 import org.firstinspires.ftc.teamcode.subsystems.arm.MainArmSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.arm.SetArmPosition;
-import org.firstinspires.ftc.teamcode.subsystems.claw.ClawConfiguration;
 import org.firstinspires.ftc.teamcode.subsystems.claw.ClawSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.claw.commands.SetClawAngle;
 import org.firstinspires.ftc.teamcode.subsystems.limelight.LimelightYoloReader;
 
 @TeleOp(name = "LimelightAimer", group = "Utils")
@@ -39,19 +37,17 @@ public class LimelightAimerTest extends VLRLinearOpMode {
         f.setStartingPose(SUB_GRAB);
         CommandScheduler cs = CommandScheduler.getInstance();
         LimelightYoloReader reader = new LimelightYoloReader();
-        VLRSubsystem.getInstance(ClawSubsystem.class).setTargetAngle(0.6);
 
 
         waitForStart();
 
-        while (!go) {
-            sleep(10);
-        }
+//        while (!go) {
+//            sleep(10);
+//        }
 
         cs.schedule(new SequentialCommandGroup(
                 new SubmersibleGrab(f, Alliance.BLUE, reader),
-                new SetClawAngle(ClawConfiguration.VerticalRotation.UP),
-                new SetArmPosition().extension(0)
+                new SetArmPosition().retract()
         ));
 
         while (opModeIsActive()) {

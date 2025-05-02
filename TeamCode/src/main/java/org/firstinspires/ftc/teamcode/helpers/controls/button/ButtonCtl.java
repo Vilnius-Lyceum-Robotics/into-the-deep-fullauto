@@ -54,7 +54,7 @@ public class ButtonCtl implements ControlDefinition {
      * @param action  The action to be performed when the button is triggered.
      */
     public ButtonCtl(GamepadKeys.Button button, Trigger trigger, Consumer<Boolean> action) {
-        this(button, trigger, false, action);
+        this(button, trigger, true, action);
     }
 
     /**

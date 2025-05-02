@@ -13,8 +13,9 @@ public class MoveRelative extends SequentialCommandGroup {
         PathBuilder path = bezierPath(f.getPose(), new Pose(f.getPose().getX() + relativeX, f.getPose().getY() + relativeY, f.getPose().getHeading()))
                 .setConstantHeadingInterpolation(f.getPose().getHeading())
                 .setPathEndTranslationalConstraint(0.1)
+                .setPathEndTimeoutConstraint(500)
                 .setPathEndHeadingConstraint(Math.PI / (360 * 2))
-                .setPathEndTValueConstraint(0.999);
+                .setPathEndTValueConstraint(0.995);
 
         addCommands(new FollowPath(f, path.build()));
     }

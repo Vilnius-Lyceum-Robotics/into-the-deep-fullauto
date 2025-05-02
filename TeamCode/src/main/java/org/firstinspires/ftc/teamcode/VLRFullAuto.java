@@ -156,69 +156,13 @@
 //
 //        while (opModeIsActive()) {
 //            gp.readButtons();
-//            if (gp.wasJustPressed(GamepadKeys.Button.A)) {
-//                followerActive[0] = !followerActive[0];
-//                if (followerActive[0]) {
-//                    rc.doubleBlip();
-//                    f.holdPoint(f.getPose());
-//                } else {
-//                    rc.singleBlip();
-//                }
-//            }
-//            if (gp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3) {
-//                cs.schedule(new RetractArm());
-//            }
+//
 //            VLRSubsystem.getInstance(Wiper.class).wipe(gp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 //
-//            if (gp.wasJustPressed(GamepadKeys.Button.X)) {
-//                VLRSubsystem.getInstance(ArmSlideSubsystem.class).setPowerOverride(true);
-//                VLRSubsystem.getInstance(ArmSlideSubsystem.class).setMotorPower(-0.3);
-//            } else if (gp.wasJustReleased(GamepadKeys.Button.X)) {
-//                VLRSubsystem.getInstance(ArmSlideSubsystem.class).setPowerOverride(false);
-//            }
 //
 //            if (gp.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
 //                cs.schedule(new SecondStageHangCommand(() -> gamepad1.dpad_down));
 //            }
-//            if (gp.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
-//                ArmLowState.set(!ArmLowState.get());
-//            }
-//
-//            if (gp.wasJustPressed(GamepadKeys.Button.Y)) {
-//                cs.schedule(new ResetRotatorMotor());
-//            }
-//
-//            if (gp.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
-//                followerActive[0] = true;
-//                f.holdPoint(new Pose(f.getPose().getX(), f.getPose().getY(), SUB_GRAB_POSE.getHeading()));
-//                double headingError = Math.abs(f.getPose().getHeading() - SUB_GRAB_POSE.getHeading());
-//                cs.schedule(
-//                        new SequentialCommandGroup(
-//                                new WaitCommand((long) (headingError * 30)),
-//                                new SubmersibleGrab(f, alliance, reader, rc)
-//                        ));
-//            }
-//            if (gp.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
-//                followerActive[0] = true;
-//                cs.schedule(
-//                        new SequentialCommandGroup(
-//                                new HighBasketScore(f, new InstantCommand() {
-//                                    @Override
-//                                    public void run() {
-//                                        followerActive[0] = false;
-//                                        rc.singleBlip();
-//                                    }
-//                                })
-//                        )
-//                );
-//            }
-//            if (followerActive[0]) {
-//                f.update();
-//            } else {
-//                chassis.drive(gp.getLeftY(), -gp.getLeftX(), -gp.getRightX() * 0.3);
-//                f.updatePose();
-//            }
-//            //f.telemetryDebug(FtcDashboard.getInstance().getTelemetry());
 //        }
 //    }
 //}

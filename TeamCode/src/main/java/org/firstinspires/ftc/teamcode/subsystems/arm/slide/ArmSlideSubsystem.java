@@ -212,7 +212,7 @@ public class ArmSlideSubsystem {
                 VLRSubsystem.getLogger(MainArmSubsystem.class).log(Level.WARNING, "SLIDES HOLDING POINT");
             }
         }
-        power = clamp(power, -1, 1);
+        power = clamp(power, -0.9, 9);
 
 
         if (limitSwitchPressed && motionProfile.getTargetPosition() == 0) {
