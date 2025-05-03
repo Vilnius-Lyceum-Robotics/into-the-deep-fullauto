@@ -51,8 +51,6 @@ public class ArmSlideSubsystem {
 
 
     public ArmSlideSubsystem(HardwareMap hardwareMap) {
-        ArmState.resetAll();
-
         extensionMotor0 = hardwareMap.get(DcMotorEx.class, MOTOR_NAME_0);
         extensionMotor1 = hardwareMap.get(DcMotorEx.class, MOTOR_NAME_1);
         extensionMotor2 = hardwareMap.get(DcMotorEx.class, MOTOR_NAME_2);
@@ -68,7 +66,6 @@ public class ArmSlideSubsystem {
         extensionMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         extensionEncoder = hardwareMap.get(DcMotorEx.class, ENCODER_NAME);
-        extensionEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         extensionEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         motionProfile = new MotionProfile(
@@ -85,9 +82,15 @@ public class ArmSlideSubsystem {
                 VELOCITY_GAIN,
                 ACCELERATION_GAIN);
 
-        motionProfile.enableTelemetry(true);
-        resetEncoder();
+        motionProfile.enableTelemetry(DEBUG_MODE);
         timer.reset();
+
+        if (!ArmState.isCurrentState(ArmState.State.SAMPLE_SCORE)) {
+            extensionEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            motionProfile.setTargetPosition(0);
+            resetEncoder();
+        }
+        else {motionProfile.setTargetPosition(extensionEncoder.getCurrentPosition());}
     }
 
 

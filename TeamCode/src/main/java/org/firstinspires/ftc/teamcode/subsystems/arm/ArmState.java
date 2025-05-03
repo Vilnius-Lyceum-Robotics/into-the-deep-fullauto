@@ -2,7 +2,11 @@ package org.firstinspires.ftc.teamcode.subsystems.arm;
 
 
 public class ArmState {
-    private static State currentState = State.IN_ROBOT;
+    private static State currentState;
+
+    public static void initialize(){
+        if (currentState == null) {currentState = State.IN_ROBOT;}
+    }
 
     public static State get() {
         return currentState;

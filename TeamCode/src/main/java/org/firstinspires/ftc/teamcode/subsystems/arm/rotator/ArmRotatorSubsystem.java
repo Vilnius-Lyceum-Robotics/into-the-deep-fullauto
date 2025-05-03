@@ -49,13 +49,10 @@ public class ArmRotatorSubsystem {
 
 
     public ArmRotatorSubsystem (HardwareMap hardwareMap) {
-        ArmState.resetAll();
-
         motor = hardwareMap.get(DcMotorSimple.class, MOTOR_NAME);
         motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         thoughBoreEncoder = hardwareMap.get(DcMotorEx.class, ENCODER_NAME);
-        thoughBoreEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         thoughBoreEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         breamBreak = hardwareMap.get(RevTouchSensor.class, BEAM_BREAK_NAME);
@@ -74,9 +71,15 @@ public class ArmRotatorSubsystem {
                 VELOCITY_GAIN,
                 ACCELERATION_GAIN);
 
-        motionProfile.enableTelemetry(true);
-        motionProfile.setTargetPosition(0);
+        motionProfile.enableTelemetry(DEBUG_MODE);
         timer.reset();
+
+        if (!ArmState.isCurrentState(ArmState.State.SAMPLE_SCORE)) {
+            motionProfile.setTargetPosition(0);
+            thoughBoreEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            resetEncoder();
+        }
+        else {motionProfile.setTargetPosition(thoughBoreEncoder.getCurrentPosition());}
     }
 
 

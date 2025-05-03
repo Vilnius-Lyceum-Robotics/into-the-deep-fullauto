@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.helpers.subsystems.VLRSubsystem;
 import org.firstinspires.ftc.teamcode.helpers.utils.GlobalConfig;
 import org.firstinspires.ftc.teamcode.helpers.persistence.PoseSaver;
+import org.firstinspires.ftc.teamcode.subsystems.arm.ArmState;
 import org.firstinspires.ftc.teamcode.subsystems.arm.MainArmSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.chassis.Chassis;
 import org.firstinspires.ftc.teamcode.subsystems.claw.ClawSubsystem;
@@ -37,6 +38,8 @@ public abstract class VLRAutoTestOpMode extends VLRLinearOpMode {
 
     @Override
     public void run() {
+        GlobalConfig.DEBUG_MODE = false;
+
         cs = CommandScheduler.getInstance();
         FConstants.initialize();
 
@@ -57,7 +60,6 @@ public abstract class VLRAutoTestOpMode extends VLRLinearOpMode {
         waitForStart();
         autoTimer.reset();
 
-        GlobalConfig.DEBUG_MODE = false;
 
         Init();
         while (opModeInInit()) {

@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.helpers.commands.CommandRunner;
 import org.firstinspires.ftc.teamcode.helpers.subsystems.VLRSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.arm.ArmState;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,6 +32,7 @@ public abstract class VLRLinearOpMode extends LinearOpMode {
         commandRunner = new CommandRunner(this::opModeIsActive, hardwareMap);
         executorService.submit(commandRunner);
 
+        ArmState.initialize();
         this.run();
 
         CommandScheduler.getInstance().reset(); // reset command scheduler -- clear all previous commands

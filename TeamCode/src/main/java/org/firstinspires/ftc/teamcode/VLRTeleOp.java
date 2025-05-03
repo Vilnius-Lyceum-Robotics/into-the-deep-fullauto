@@ -29,6 +29,8 @@ import org.firstinspires.ftc.teamcode.helpers.enums.Alliance;
 import org.firstinspires.ftc.teamcode.helpers.opmode.VLRLinearOpMode;
 import org.firstinspires.ftc.teamcode.helpers.subsystems.VLRSubsystem;
 import org.firstinspires.ftc.teamcode.helpers.persistence.PoseSaver;
+import org.firstinspires.ftc.teamcode.helpers.utils.GlobalConfig;
+import org.firstinspires.ftc.teamcode.subsystems.arm.ArmState;
 import org.firstinspires.ftc.teamcode.subsystems.arm.MainArmConfiguration;
 import org.firstinspires.ftc.teamcode.subsystems.arm.MainArmSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.arm.SetArmPosition;
@@ -62,12 +64,23 @@ public class VLRTeleOp extends VLRLinearOpMode {
 
     @Override
     public void run() {
-        LimelightYoloReader reader = new LimelightYoloReader();
+        GlobalConfig.DEBUG_MODE = false;
 
+        LimelightYoloReader reader = new LimelightYoloReader();
         cs = CommandScheduler.getInstance();
 
         VLRSubsystem.requireSubsystems(MainArmSubsystem.class, ClawSubsystem.class, Chassis.class, Wiper.class);
         VLRSubsystem.initializeAll(hardwareMap);
+
+        if(ArmState.isCurrentState(ArmState.State.SAMPLE_SCORE)){
+            cs.schedule(
+                    new SequentialCommandGroup(
+                            new SetArmPosition().extensionAndAngleDegrees(1, 95),
+                            new WaitCommand(300),
+                            new SetArmPosition().retract()
+                    )
+            );
+        }
 
         f = new Follower(hardwareMap, FConstants.class, LConstants.class);
         if (!PoseSaver.isPoseSaved()) {

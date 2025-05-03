@@ -49,8 +49,6 @@ public class ArmCommandMagnitudeAndExtensionTest extends VLRTestOpMode {
 
     @Override
     public void Init(){
-        FConstants.initialize();
-
         VLRSubsystem.requireSubsystems(MainArmSubsystem.class, ClawSubsystem.class, Chassis.class);
         VLRSubsystem.initializeAll(hardwareMap);
 

@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.auto.sample;
 
 import static org.firstinspires.ftc.teamcode.auto.sample.PointsSample.*;
 import static org.firstinspires.ftc.teamcode.helpers.pedro.PoseToPath.bezierPath;
-
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -13,11 +12,8 @@ import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.pedropathing.commands.FollowPath;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.teamcode.helpers.commands.CustomConditionalCommand;
 import org.firstinspires.ftc.teamcode.helpers.commands.LogCommand;
-import org.firstinspires.ftc.teamcode.helpers.commands.ScheduleRuntimeCommand;
 import org.firstinspires.ftc.teamcode.helpers.enums.Alliance;
 import org.firstinspires.ftc.teamcode.helpers.subsystems.VLRSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.arm.ArmState;
@@ -28,28 +24,22 @@ import org.firstinspires.ftc.teamcode.subsystems.claw.commands.SetClawAngle;
 import org.firstinspires.ftc.teamcode.subsystems.claw.commands.SetClawState;
 import org.firstinspires.ftc.teamcode.subsystems.claw.commands.SetClawTwist;
 import org.firstinspires.ftc.teamcode.subsystems.limelight.LimelightYoloReader;
-
 import java.util.logging.Level;
 
 public class AutonomousPeriodActionSample extends SequentialCommandGroup {
     private boolean sampleScored = false;
     private Alliance alliance;
     private LimelightYoloReader reader;
-    private ElapsedTime autoTimer = new ElapsedTime();
     private double elapsedTime = 0;
     private double jointPathTValue = 0.5;
+    private double startTime = 0;
 
     public AutonomousPeriodActionSample(Follower follower, Alliance alliance, LimelightYoloReader reader) {
         this.alliance = alliance;
         this.reader = reader;
 
         addCommands(
-                new org.firstinspires.ftc.teamcode.helpers.commands.InstantCommand() {
-                    @Override
-                    public void run() {
-                        autoTimer = new ElapsedTime();
-                    }
-                },
+                new InstantCommand(()-> startTime = System.nanoTime()),
                 new SetClawAngle(ClawConfiguration.VerticalRotation.UP),
                 new SetClawTwist(ClawConfiguration.HorizontalRotation.NORMAL),
                 new SetClawState(ClawConfiguration.GripperState.CLOSED),
@@ -70,7 +60,7 @@ public class AutonomousPeriodActionSample extends SequentialCommandGroup {
                 subCycle(follower, 6),
                 subCycle(follower, 7),
 
-                new ScheduleRuntimeCommand(() -> new LogCommand("SKIBIDI AUTO TIME SECONDS: ", Level.SEVERE, "SKIBIDI AUTO TIME SECONDS: " + elapsedTime))
+                new LogCommand("SKIBIDI: ", Level.SEVERE, ()-> "SKIBIDI AUTO TIME SECONDS: " + elapsedTime)
         );
     }
 
@@ -117,19 +107,22 @@ public class AutonomousPeriodActionSample extends SequentialCommandGroup {
                         new SequentialCommandGroup(
                                 new SetArmPosition().retract(),
 
-                                new org.firstinspires.ftc.teamcode.helpers.commands.InstantCommand() {
-                                    @Override
-                                    public void run() {
-                                        if (sample == 7) {
-                                            elapsedTime = autoTimer.seconds();
-                                        }
-                                    }
-                                },
+                                new InstantCommand(()-> elapsedTime = (System.nanoTime() - startTime) / Math.pow(10, 9)),
 
                                 new SetArmPosition().scoreSample(MainArmConfiguration.SAMPLE_SCORE_HEIGHT.HIGH_BASKET),
                                 new WaitUntilCommand(() -> follower.atPose(BUCKET_HIGH_SCORE_POSE, 2, 2, Math.toRadians(2.5))),
                                 new InstantCommand(() -> sampleScored = true),
-                                new SetArmPosition().retract()
+
+                                new ConditionalCommand(
+                                        new SetArmPosition().retract(),
+                                        new SequentialCommandGroup(
+                                                new SetClawState(ClawConfiguration.GripperState.OPEN),
+                                                new WaitCommand(150),
+                                                new SetClawAngle(ClawConfiguration.VerticalRotation.DOWN)
+                                        ),
+                                        ()-> sample <= 6
+
+                                )
                         ),
 
                         new SequentialCommandGroup(
@@ -137,7 +130,7 @@ public class AutonomousPeriodActionSample extends SequentialCommandGroup {
                                 new FollowPath(follower, bezierPath(SUB_GRAB, SUB_GRAB_CONTROL_2, SUB_GRAB_CONTROL_1, SUB_GRAB_0)
                                         .setTangentHeadingInterpolation().setReversed(true).build(), false).setCompletionThreshold(jointPathTValue),
                                 new LogCommand("Auto bombo", "Passed 1st path"),
-                                new FollowPath(follower, bezierPath(SUB_GRAB_0, BUCKET_HIGH_SCORE_POSE_SUB)
+                                new FollowPath(follower, bezierPath(SUB_GRAB_0, BUCKET_HIGH_SCORE_POSE_SUB).setZeroPowerAccelerationMultiplier(2)
                                         .setConstantHeadingInterpolation(BUCKET_HIGH_SCORE_POSE.getHeading()).build()),
                                 new LogCommand("Auto bombo", "Passed 2nd path"),
 

@@ -6,7 +6,7 @@ public abstract class VLRTestOpMode extends VLRLinearOpMode{
 
     @Override
     public void run(){
-        GlobalConfig.DEBUG_MODE = false;
+        GlobalConfig.DEBUG_MODE = true;
         //CommandScheduler.getInstance().schedule(new InstantCommand(()-> VLRSubsystem.getArm().setOperationMode(MainArmConfiguration.OPERATION_MODE.NORMAL)));
 
         Init();
