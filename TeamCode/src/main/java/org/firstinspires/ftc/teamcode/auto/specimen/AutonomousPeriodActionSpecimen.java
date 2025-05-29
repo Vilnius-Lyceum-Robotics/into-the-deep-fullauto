@@ -57,7 +57,7 @@ public class AutonomousPeriodActionSpecimen extends SequentialCommandGroup {
     public AutonomousPeriodActionSpecimen(Follower follower, LimelightYoloReader reader) {
         addCommands(
                 //TIMER RESETS IN THE MAIN LOOP, NO NEED TO RESET HERE
-                new WaitCommand(999999999),
+                //new WaitCommand(999999999),
 
                 new SetClawAngle(ClawConfiguration.VerticalRotation.UP),
                 new SetClawTwist(ClawConfiguration.HorizontalRotation.NORMAL),
