@@ -14,11 +14,13 @@ import org.firstinspires.ftc.teamcode.helpers.subsystems.VLRSubsystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements SensorsConfiguration{
 
     private static final Logger logger = LoggerFactory.getLogger(SensorsSubsystem.class);
+
     AnalogInput backSensor;
     AnalogInput leftSensor;
     AnalogInput rightSensor;
@@ -36,6 +38,12 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
     private double leftDistance;
     private double rightAngledDistance;
     private double leftAngledDistance;
+
+    private Pose backPose;
+    private Pose rightPose;
+    private Pose leftPose;
+    private Pose rightAngledPose;
+    private Pose leftAngledPose;
 
     List<PointF> field;
 
@@ -84,25 +92,45 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
     public void updateRightAngledDistance() {
         rightAngledDistance = rightAngledSensorFilter.estimate(rightAngledSensor.getVoltage() / 3.3 * sensorScalar);
     }
-/*
-    public Pose detectedFrontObjectPos(Follower follower) {
-        if (frontDistance >= 3.94 ) return null;
+
+    public void updateBackPose(Pose currentRobotPose) {
+        if (backDistance >= 800) return;
+        backPose = new Pose(
+                currentRobotPose.getX() - backDistance * Math.cos(currentRobotPose.getHeading()),
+                currentRobotPose.getY() - backDistance * Math.sin(currentRobotPose.getHeading())
+            );
+    }
+
+    public Pose detectedBackObjectPos(Follower follower) {
+        if (backDistance >= 3.94 ) return null;
         logger.info("DETECTED OBJECT IN THE FRONT");
         Pose currentRobotPose = follower.getPose();
-        double object_X = currentRobotPose.getX() + frontDistance * Math.cos(currentRobotPose.getHeading());
-        double object_Y = currentRobotPose.getY() + frontDistance * Math.sin(currentRobotPose.getHeading());
+        double object_X = currentRobotPose.getX() - backDistance * Math.cos(currentRobotPose.getHeading());
+        double object_Y = currentRobotPose.getY() - backDistance * Math.sin(currentRobotPose.getHeading());
 
-        if (isObjectField(object_X, object_Y)) {
+        if (isObjectField(new Pose(object_X, object_Y))) {
             logger.info("FIELD IN FRONT, IGNORING");
             return null;
         }
 
         logger.info("OTHER ROBOT AT " + object_X + ", " + object_Y);
         return new Pose(object_X, object_Y);
-    } */
+    }
 
-    public boolean isObjectField(double object_X, double object_Y) {
+    // TODO add the remaining sensors
+    public List<Pose> detectObstacles(Follower follower) {
+        List<Pose> foreignObjectPositions = new ArrayList<>();
+        Pose currentRobotPose = follower.getPose();
 
+        updateBackPose(currentRobotPose);
+
+        if (!isObjectField(backPose)) foreignObjectPositions.add(backPose);
+
+        return foreignObjectPositions;
+    }
+
+    public boolean isObjectField(Pose objectPose) {
+        if (objectPose == null) return true;
         int crossings = 0;
         int size = field.size();
 
@@ -111,10 +139,10 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
             PointF a = field.get(i);
             PointF b = field.get((i + 1) % size);
 
-            if (((a.y > object_Y) != (b.y > object_Y))) {
+            if (((a.y > objectPose.getY()) != (b.y > objectPose.getY()))) {
 
-                double slope = (b.x - a.x) * (object_Y - a.y) / (b.y - a.y) + a.x;
-                if (object_X < slope) {
+                double slope = (b.x - a.x) * (objectPose.getY() - a.y) / (b.y - a.y) + a.x;
+                if (objectPose.getX() < slope) {
                     crossings++;
                 }
             }

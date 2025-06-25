@@ -16,7 +16,6 @@ public interface SensorsConfiguration {
     String RIGHT_SENSOR = "";
     List<PointF> SUBMERSIBLE_POLYGON = new ArrayList<PointF>() {{
             new PointF(46, 98);
-
             new PointF(50, 98);
             new PointF(50, 88);
             new PointF(94, 88);
