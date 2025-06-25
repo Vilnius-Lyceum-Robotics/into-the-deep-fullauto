@@ -20,7 +20,6 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
 
     private static final Logger logger = LoggerFactory.getLogger(SensorsSubsystem.class);
     AnalogInput backSensor;
-    AnalogInput frontSensor;
     AnalogInput leftSensor;
     AnalogInput rightSensor;
     AnalogInput leftAngledSensor;
@@ -28,23 +27,24 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
 
     LowPassFilter rightSensorFilter = new LowPassFilter(0.5);
     LowPassFilter leftSensorFilter = new LowPassFilter(0.5);
-    LowPassFilter backSensorFilter = new LowPassFilter(0.5);
-    LowPassFilter rightAngledSensorFilter = new LowPassFilter(0.5);
-    LowPassFilter leftAngledSensorFilter = new LowPassFilter(0.5);
-    LowPassFilter frontSensorFilter = new LowPassFilter(0.5);
+    LowPassFilter backSensorFilter = new LowPassFilter(0.3);
+    LowPassFilter rightAngledSensorFilter = new LowPassFilter(0.97);
+    LowPassFilter leftAngledSensorFilter = new LowPassFilter(0.97);
 
-    private double backDistance; // inches
-    private double frontDistance;
+    private double backDistance;
     private double rightDistance;
     private double leftDistance;
+    private double rightAngledDistance;
+    private double leftAngledDistance;
 
     List<PointF> field;
+
+    public static double sensorScalar = 1105;
 
 
     @Override
     protected void initialize(HardwareMap hardwareMap) {
         backSensor = hardwareMap.get(AnalogInput.class, BACK_SENSOR);
-        frontSensor = hardwareMap.get(AnalogInput.class, FRONT_SENSOR);
         leftSensor = hardwareMap.get(AnalogInput.class, LEFT_SENSOR);
         rightSensor = hardwareMap.get(AnalogInput.class, RIGHT_SENSOR);
         leftAngledSensor = hardwareMap.get(AnalogInput.class, LEFT_ANGLED_SENSOR);
@@ -55,7 +55,6 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
 
     @Override
     public void periodic(){
-        updateFrontDistance();
         updateBackDistance();
         updateLeftDistance();
         updateRightDistance();
@@ -64,24 +63,28 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
         telemetry.addData("LEFT DISTANCE: ", leftDistance);
         telemetry.addData("RIGHT DISTANCE: ", rightDistance);
         telemetry.addData("BACK DISTANCE: ", backDistance);
-        telemetry.addData("FRONT DISTANCE: ", frontDistance);
     }
 
     public void updateBackDistance(){
-        backDistance = backSensorFilter.estimate(backSensor.getVoltage() / 3.3 * 3.94);
-    }
-    public void updateFrontDistance() {
-        frontDistance = frontSensorFilter.estimate(frontSensor.getVoltage() / 3.3 * 3.94);
+        backDistance = backSensorFilter.estimate(backSensor.getVoltage() / 3.3 * 31.5);
     }
 
     public void updateLeftDistance() {
-        leftDistance = leftSensorFilter.estimate(leftSensor.getVoltage() / 3.3 * 3.94);
+        leftDistance = leftSensorFilter.estimate(leftSensor.getVoltage() / 3.3 * 31.5);
     }
 
     public void updateRightDistance() {
-        rightDistance = rightSensorFilter.estimate(rightSensor.getVoltage() / 3.3 * 3.94);
+        rightDistance = rightSensorFilter.estimate(rightSensor.getVoltage() / 3.3 * 31.5);
     }
 
+    public void updateLeftAngledDistance() {
+        leftAngledDistance = leftAngledSensorFilter.estimate(leftAngledSensor.getVoltage() / 3.3 * sensorScalar);
+    }
+
+    public void updateRightAngledDistance() {
+        rightAngledDistance = rightAngledSensorFilter.estimate(rightAngledSensor.getVoltage() / 3.3 * sensorScalar);
+    }
+/*
     public Pose detectedFrontObjectPos(Follower follower) {
         if (frontDistance >= 3.94 ) return null;
         logger.info("DETECTED OBJECT IN THE FRONT");
@@ -96,7 +99,7 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
 
         logger.info("OTHER ROBOT AT " + object_X + ", " + object_Y);
         return new Pose(object_X, object_Y);
-    }
+    } */
 
     public boolean isObjectField(double object_X, double object_Y) {
 

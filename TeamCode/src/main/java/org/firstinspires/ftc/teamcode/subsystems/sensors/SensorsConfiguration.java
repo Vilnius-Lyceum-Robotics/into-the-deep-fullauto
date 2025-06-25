@@ -9,7 +9,6 @@ import java.util.List;
 
 @Config
 public interface SensorsConfiguration {
-    String FRONT_SENSOR = "frontAnalog";
     String BACK_SENSOR = "backAnalog";
     String LEFT_ANGLED_SENSOR = "CHanalog2";
     String RIGHT_ANGLED_SENSOR = "CHanalog1";
