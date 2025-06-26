@@ -27,8 +27,8 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
     AnalogInput leftAngledSensor;
     AnalogInput rightAngledSensor;
 
-    LowPassFilter rightSensorFilter = new LowPassFilter(0.5);
-    LowPassFilter leftSensorFilter = new LowPassFilter(0.5);
+    LowPassFilter rightSensorFilter = new LowPassFilter(0.3);
+    LowPassFilter leftSensorFilter = new LowPassFilter(0.3);
     LowPassFilter backSensorFilter = new LowPassFilter(0.3);
     LowPassFilter rightAngledSensorFilter = new LowPassFilter(0.97);
     LowPassFilter leftAngledSensorFilter = new LowPassFilter(0.97);
@@ -94,11 +94,36 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
     }
 
     public void updateBackPose(Pose currentRobotPose) {
-        if (backDistance >= 800) return;
+        if (backDistance == 31.5) {
+            backPose = null;
+            return;
+        }
         backPose = new Pose(
                 currentRobotPose.getX() - backDistance * Math.cos(currentRobotPose.getHeading()),
                 currentRobotPose.getY() - backDistance * Math.sin(currentRobotPose.getHeading())
             );
+    }
+
+    public void updateRightPose(Pose currentRobotPose) {
+        if (rightDistance == 31.5) {
+            rightPose = null;
+            return;
+        }
+        rightPose = new Pose(
+                currentRobotPose.getX() + rightDistance * Math.sin(currentRobotPose.getHeading()),
+                currentRobotPose.getY() - rightDistance * Math.cos(currentRobotPose.getHeading())
+        );
+    }
+
+    public void updateLeftPose(Pose currentRobotPose) {
+        if (leftDistance == 31.5) {
+            leftPose = null;
+            return;
+        }
+        leftPose = new Pose(
+                currentRobotPose.getX() - leftDistance * Math.sin(currentRobotPose.getHeading()),
+                currentRobotPose.getY() + leftDistance * Math.cos(currentRobotPose.getHeading())
+        );
     }
 
     public Pose detectedBackObjectPos(Follower follower) {
@@ -117,14 +142,18 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
         return new Pose(object_X, object_Y);
     }
 
-    // TODO add the remaining sensors
-    public List<Pose> detectObstacles(Follower follower) {
+    // TODO add the angled sensors
+    public List<Pose> detectFilteredObstacles(Follower follower) {
         List<Pose> foreignObjectPositions = new ArrayList<>();
         Pose currentRobotPose = follower.getPose();
 
         updateBackPose(currentRobotPose);
+        updateRightPose(currentRobotPose);
+        updateLeftPose(currentRobotPose);
 
         if (!isObjectField(backPose)) foreignObjectPositions.add(backPose);
+        if (!isObjectField(rightPose)) foreignObjectPositions.add(rightPose);
+        if (!isObjectField(leftPose)) foreignObjectPositions.add(leftPose);
 
         return foreignObjectPositions;
     }
