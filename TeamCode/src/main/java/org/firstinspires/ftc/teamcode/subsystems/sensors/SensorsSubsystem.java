@@ -39,11 +39,7 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
     private double rightAngledDistance;
     private double leftAngledDistance;
 
-    private Pose backPose;
-    private Pose rightPose;
-    private Pose leftPose;
-    private Pose rightAngledPose;
-    private Pose leftAngledPose;
+    private List<Pose> sensorPoses;
 
     List<PointF> field;
 
@@ -59,6 +55,12 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
         rightAngledSensor = hardwareMap.get(AnalogInput.class, RIGHT_ANGLED_SENSOR);
 
         field = SUBMERSIBLE_POLYGON;
+
+        sensorPoses = new ArrayList<>() {{
+            new Pose(0, 0); // back sensor
+            new Pose(0, 0); // right sensor
+            new Pose(0, 0); // left sensor
+        }};
     }
 
     @Override
@@ -95,35 +97,35 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
 
     public void updateBackPose(Pose currentRobotPose) {
         if (backDistance == 31.5) {
-            backPose = null;
+            sensorPoses.set(0, null);
             return;
         }
-        backPose = new Pose(
+        sensorPoses.set(0, new Pose(
                 currentRobotPose.getX() - (DISTANCE_BETWEEN_BACK_SENSOR_AND_CENTER + backDistance) * Math.cos(currentRobotPose.getHeading()),
                 currentRobotPose.getY() - (DISTANCE_BETWEEN_BACK_SENSOR_AND_CENTER + backDistance) * Math.sin(currentRobotPose.getHeading())
-            );
+            ));
     }
 
     public void updateRightPose(Pose currentRobotPose) {
         if (rightDistance == 31.5) {
-            rightPose = null;
+            sensorPoses.set(1, null);
             return;
         }
-        rightPose = new Pose(
+        sensorPoses.set(1, new Pose(
                 currentRobotPose.getX() + (0.5 * DISTANCE_BETWEEN_SIDE_SENSORS + rightDistance) * Math.sin(currentRobotPose.getHeading()),
                 currentRobotPose.getY() - (0.5 * DISTANCE_BETWEEN_SIDE_SENSORS + rightDistance) * Math.cos(currentRobotPose.getHeading())
-        );
+        ));
     }
 
     public void updateLeftPose(Pose currentRobotPose) {
         if (leftDistance == 31.5) {
-            leftPose = null;
+            sensorPoses.set(2, null);
             return;
         }
-        leftPose = new Pose(
+        sensorPoses.set(2, new Pose(
                 currentRobotPose.getX() - (0.5 * DISTANCE_BETWEEN_SIDE_SENSORS + leftDistance) * Math.sin(currentRobotPose.getHeading()),
                 currentRobotPose.getY() + (0.5 * DISTANCE_BETWEEN_SIDE_SENSORS + leftDistance) * Math.cos(currentRobotPose.getHeading())
-        );
+        ));
     }
 
     public Pose detectedBackObjectPos(Follower follower) {
@@ -143,19 +145,32 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
     }
 
     // TODO add the angled sensors
-    public List<Pose> detectFilteredObstacles(Follower follower) {
+    public List<Pose> getFilteredObstacles(Follower follower) {
         List<Pose> foreignObjectPositions = new ArrayList<>();
+
+        for (Pose pose : sensorPoses) {
+            if (!isObjectField(pose)) foreignObjectPositions.add(pose);
+        }
+
+        return foreignObjectPositions;
+    }
+
+    public void updateAllPoses(Follower follower) {
         Pose currentRobotPose = follower.getPose();
 
         updateBackPose(currentRobotPose);
         updateRightPose(currentRobotPose);
         updateLeftPose(currentRobotPose);
+    }
+    public List<Pose> getAllObstacles(Follower follower) {
+        List<Pose> obstaclePoses = new ArrayList<>();
+        updateAllPoses(follower);
 
-        if (!isObjectField(backPose)) foreignObjectPositions.add(backPose);
-        if (!isObjectField(rightPose)) foreignObjectPositions.add(rightPose);
-        if (!isObjectField(leftPose)) foreignObjectPositions.add(leftPose);
+        for (Pose pose : sensorPoses) {
+            if (pose != null) obstaclePoses.add(pose);
+        }
 
-        return foreignObjectPositions;
+        return obstaclePoses;
     }
 
     public boolean isObjectField(Pose objectPose) {
