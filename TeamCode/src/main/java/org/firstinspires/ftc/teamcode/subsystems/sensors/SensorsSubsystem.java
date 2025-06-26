@@ -99,8 +99,8 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
             return;
         }
         backPose = new Pose(
-                currentRobotPose.getX() - backDistance * Math.cos(currentRobotPose.getHeading()),
-                currentRobotPose.getY() - backDistance * Math.sin(currentRobotPose.getHeading())
+                currentRobotPose.getX() - (DISTANCE_BETWEEN_BACK_SENSOR_AND_CENTER + backDistance) * Math.cos(currentRobotPose.getHeading()),
+                currentRobotPose.getY() - (DISTANCE_BETWEEN_BACK_SENSOR_AND_CENTER + backDistance) * Math.sin(currentRobotPose.getHeading())
             );
     }
 
@@ -110,8 +110,8 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
             return;
         }
         rightPose = new Pose(
-                currentRobotPose.getX() + rightDistance * Math.sin(currentRobotPose.getHeading()),
-                currentRobotPose.getY() - rightDistance * Math.cos(currentRobotPose.getHeading())
+                currentRobotPose.getX() + (0.5 * DISTANCE_BETWEEN_SIDE_SENSORS + rightDistance) * Math.sin(currentRobotPose.getHeading()),
+                currentRobotPose.getY() - (0.5 * DISTANCE_BETWEEN_SIDE_SENSORS + rightDistance) * Math.cos(currentRobotPose.getHeading())
         );
     }
 
@@ -121,8 +121,8 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
             return;
         }
         leftPose = new Pose(
-                currentRobotPose.getX() - leftDistance * Math.sin(currentRobotPose.getHeading()),
-                currentRobotPose.getY() + leftDistance * Math.cos(currentRobotPose.getHeading())
+                currentRobotPose.getX() - (0.5 * DISTANCE_BETWEEN_SIDE_SENSORS + leftDistance) * Math.sin(currentRobotPose.getHeading()),
+                currentRobotPose.getY() + (0.5 * DISTANCE_BETWEEN_SIDE_SENSORS + leftDistance) * Math.cos(currentRobotPose.getHeading())
         );
     }
 
