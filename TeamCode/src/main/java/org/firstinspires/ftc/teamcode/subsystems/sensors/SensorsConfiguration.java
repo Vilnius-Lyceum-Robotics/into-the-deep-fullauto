@@ -29,7 +29,7 @@ public interface SensorsConfiguration {
             new PointF(46, 46);
     }};
 
-    double DISTANCE_BETWEEN_ANGLED_SENSORS = 303.9089; //mm
-    double DISTANCE_BETWEEN_SIDE_SENSORS = 0;
-    double DISTANCE_BETWEEN_BACK_SENSOR_AND_CENTER = 0;
+    double DISTANCE_BETWEEN_ANGLED_SENSORS = 303.9089 / 25.4; // inches
+    double DISTANCE_BETWEEN_SIDE_SENSORS = 0 / 25.4;
+    double DISTANCE_BETWEEN_BACK_SENSOR_AND_CENTER = 0 / 25.4;
 }

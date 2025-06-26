@@ -43,7 +43,7 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
 
     List<PointF> field;
 
-    public static double sensorScalar = 1105;
+    public static double sensorScalar = 1105 / 25.4;
 
 
     @Override
