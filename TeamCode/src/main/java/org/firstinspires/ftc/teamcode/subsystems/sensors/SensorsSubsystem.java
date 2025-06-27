@@ -27,9 +27,9 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
     AnalogInput leftAngledSensor;
     AnalogInput rightAngledSensor;
 
-    LowPassFilter rightSensorFilter = new LowPassFilter(0.3);
-    LowPassFilter leftSensorFilter = new LowPassFilter(0.3);
-    LowPassFilter backSensorFilter = new LowPassFilter(0.3);
+    LowPassFilter rightSensorFilter = new LowPassFilter(0.97);
+    LowPassFilter leftSensorFilter = new LowPassFilter(0.97);
+    LowPassFilter backSensorFilter = new LowPassFilter(0.97);
     LowPassFilter rightAngledSensorFilter = new LowPassFilter(0.97);
     LowPassFilter leftAngledSensorFilter = new LowPassFilter(0.97);
 
@@ -68,23 +68,36 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
         updateBackDistance();
         updateLeftDistance();
         updateRightDistance();
-
-        Telemetry telemetry = FtcDashboard.getInstance().getTelemetry();
+    }
+    public void telemetry(Telemetry telemetry) {
         telemetry.addData("LEFT DISTANCE: ", leftDistance);
         telemetry.addData("RIGHT DISTANCE: ", rightDistance);
         telemetry.addData("BACK DISTANCE: ", backDistance);
     }
 
+    public double getLeftDistance() {
+        return this.leftDistance;
+    }
+    public double getRightDistance() {
+        return this.rightDistance;
+    }
+    public double getBackDistance() {
+        return this.backDistance;
+    }
+
     public void updateBackDistance(){
-        backDistance = backSensorFilter.estimate(backSensor.getVoltage() / 3.3 * 31.5);
+        backDistance = backSensorFilter.estimate(backSensor.getVoltage() / 3.3 * 800);
+        logger.info("BACK DISTANCE UPDATED TO " + backDistance);
     }
 
     public void updateLeftDistance() {
-        leftDistance = leftSensorFilter.estimate(leftSensor.getVoltage() / 3.3 * 31.5);
+        leftDistance = leftSensorFilter.estimate(leftSensor.getVoltage() / 3.3 * 800);
+        logger.info("LEFT DISTANCE UPDATED TO " + leftDistance);
     }
 
     public void updateRightDistance() {
-        rightDistance = rightSensorFilter.estimate(rightSensor.getVoltage() / 3.3 * 31.5);
+        rightDistance = rightSensorFilter.estimate(rightSensor.getVoltage() / 3.3 * 800);
+        logger.info("RIGHT DISTANCE UPDATED TO " + rightDistance);
     }
 
     public void updateLeftAngledDistance() {

@@ -12,8 +12,8 @@ public interface SensorsConfiguration {
     String BACK_SENSOR = "backAnalog";
     String LEFT_ANGLED_SENSOR = "CHanalog2";
     String RIGHT_ANGLED_SENSOR = "CHanalog1";
-    String LEFT_SENSOR = "";
-    String RIGHT_SENSOR = "";
+    String LEFT_SENSOR = "leftAnalog";
+    String RIGHT_SENSOR = "rightAnalog";
     List<PointF> SUBMERSIBLE_POLYGON = new ArrayList<PointF>() {{
             new PointF(46, 98);
             new PointF(50, 98);
