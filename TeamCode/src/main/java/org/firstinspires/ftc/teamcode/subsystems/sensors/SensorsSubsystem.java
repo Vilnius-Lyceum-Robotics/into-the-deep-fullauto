@@ -189,6 +189,15 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
         return obstaclePoses;
     }
 
+    public void printAllObstacles(Follower follower) {
+        logger.info("PRINTING OBSTACLE POSITIONS...");
+        List<Pose> obstaclePoses = this.getAllObstacles(follower);
+
+        for (Pose pose : obstaclePoses) {
+            System.out.println(pose.getX() + " " + pose.getY());
+        }
+    }
+
     public boolean isObjectField(Pose objectPose) {
         logger.info("FIELD DETECTION STARTED");
         if (objectPose == null) return true;
