@@ -87,17 +87,14 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
 
     public void updateBackDistance(){
         backDistance = backSensorFilter.estimate(backSensor.getVoltage() / 3.3 * 800);
-        logger.info("BACK DISTANCE UPDATED TO " + backDistance);
     }
 
     public void updateLeftDistance() {
         leftDistance = leftSensorFilter.estimate(leftSensor.getVoltage() / 3.3 * 800);
-        logger.info("LEFT DISTANCE UPDATED TO " + leftDistance);
     }
 
     public void updateRightDistance() {
         rightDistance = rightSensorFilter.estimate(rightSensor.getVoltage() / 3.3 * 800);
-        logger.info("RIGHT DISTANCE UPDATED TO " + rightDistance);
     }
 
     public void updateLeftAngledDistance() {
@@ -117,6 +114,8 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
                 currentRobotPose.getX() - (DISTANCE_BETWEEN_BACK_SENSOR_AND_CENTER + backDistance) * Math.cos(currentRobotPose.getHeading()),
                 currentRobotPose.getY() - (DISTANCE_BETWEEN_BACK_SENSOR_AND_CENTER + backDistance) * Math.sin(currentRobotPose.getHeading())
             ));
+
+        logger.info("BACK POSE UPDATED" + sensorPoses.get(0));
     }
 
     public void updateRightPose(Pose currentRobotPose) {
@@ -128,6 +127,7 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
                 currentRobotPose.getX() + (0.5 * DISTANCE_BETWEEN_SIDE_SENSORS + rightDistance) * Math.sin(currentRobotPose.getHeading()),
                 currentRobotPose.getY() - (0.5 * DISTANCE_BETWEEN_SIDE_SENSORS + rightDistance) * Math.cos(currentRobotPose.getHeading())
         ));
+        logger.info("RIGHT POSE UPDATED" + sensorPoses.get(1));
     }
 
     public void updateLeftPose(Pose currentRobotPose) {
@@ -139,6 +139,7 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
                 currentRobotPose.getX() - (0.5 * DISTANCE_BETWEEN_SIDE_SENSORS + leftDistance) * Math.sin(currentRobotPose.getHeading()),
                 currentRobotPose.getY() + (0.5 * DISTANCE_BETWEEN_SIDE_SENSORS + leftDistance) * Math.cos(currentRobotPose.getHeading())
         ));
+        logger.info("LEFT POSE UPDATED" + sensorPoses.get(2));
     }
 
     public Pose detectedBackObjectPos(Follower follower) {
@@ -159,6 +160,7 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
 
     // TODO add the angled sensors
     public List<Pose> getFilteredObstacles(Follower follower) {
+        logger.info("GETTING FILTERED OBSTACLES...");
         List<Pose> foreignObjectPositions = new ArrayList<>();
 
         for (Pose pose : sensorPoses) {
@@ -176,6 +178,7 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
         updateLeftPose(currentRobotPose);
     }
     public List<Pose> getAllObstacles(Follower follower) {
+        logger.info("GETTING ALL OBSTACLES...");
         List<Pose> obstaclePoses = new ArrayList<>();
         updateAllPoses(follower);
 
@@ -187,6 +190,7 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
     }
 
     public boolean isObjectField(Pose objectPose) {
+        logger.info("FIELD DETECTION STARTED");
         if (objectPose == null) return true;
         int crossings = 0;
         int size = field.size();
@@ -204,6 +208,8 @@ public class SensorsSubsystem extends VLRSubsystem<SensorsSubsystem> implements 
                 }
             }
         }
+
+        logger.info("IS OBJECT FIELD: " + (crossings % 2 == 1));
 
         return (crossings % 2 == 1);
     }
